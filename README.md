@@ -1,82 +1,43 @@
-# Data Simulation and Clustering Analysis
+# Data  Clustering Simulation
 
-This project simulates data and performs clustering analysis using `flowClust`. It generates simulated data for a range of covariance values (`cov_sim`), and then applies clustering analysis to the simulated data.
+This project performs data simulations and clustering analysis for various covariance simulations (`cov_sim`). It generates simulated data, applies clustering analysis, and stores the results for further evaluation.
 
 ## Usage
 
 ### Requirements
 
+#### R
 Ensure you have the following packages installed in R:
 - `MASS`
 - `flowClust`
 - Any other dependent packages (e.g., `flowCore`)
 
-### Code
+#### Python
+Ensure you have the following packages installed in Python:
+- `numpy`
+- `scikit-learn`
+- `matplotlib`
 
-```R
-# Define the cov_sim variations
-cov_sim_values <- c(0,0.1,0.2, 0.5, 0.7)
+### How to Run
 
-# Initialize a list to hold the simulated data for each cov_sim value
-simulated_data_lists <- list()
+#### R
 
-# Iterate over the cov_sim values
-for (cov_index in seq_along(cov_sim_values)) {
-  cov_sim <- cov_sim_values[cov_index]
-  
-  # Initialize lists for this cov_sim
-  simulated_sample_list <- list()
-  flow_sim_list <- list()
-  MM_list <- list()
-  Zhat_list1 <- list()
-  Ztoy_list1 <- list()
-  pi1 <- list()
-  
-  # Adjust the number of simulations if necessary
-  num_simulations <- 5
-  
-  # Loop to generate data, perform flowClust, and store in lists
-  for (j in 1:num_simulations) {
-    set.seed(123 + j)
-    
-    # Calculate standard deviation for channels
-    sd_channel <- apply(mu, 1, sd)
-    
-    # Generate modified mu for each sample
-    mu_samp_list <- list()
-    for(k in 1:5) {
-      mu_samp_list[[k]] <- mu + matrix(rnorm(6 * 9, sd = cov_sim * sd_channel), nrow = 6, ncol = 9)
-    }
-    
-    # Simulate datasets
-    Ztoy <- sample(1:G, size = n, prob = pi, replace = TRUE)
-    ytoy <- t(sapply(Ztoy, function(z) MASS::mvrnorm(n = 1, mu = mu_samp_list[[j]][, z], Sigma = sigma[, , z])))
-    colnames(ytoy) <- Memory.mgd7.PS80.15.2[[9]]@varNames
-    
-    simulated_sample <- new("flowFrame", exprs = as.matrix(ytoy), parameters = parameters(Memory.mgd7.PS80.15.S1$lymphocyte))
-    flow_sim <- flowClust(simulated_sample, K = 9, trans = 0, nu = Inf)
-    
-    if (!is.null(flow_sim@z)) {
-      simulated_sample_list[[j]] <- simulated_sample
-      flow_sim_list[[j]] <- flow_sim
-      pi1[[j]] <- flow_sim@w
-      # Store the simulated data and clustering results
-      MM_list[[j]] <- ytoy
-      Zhat <- apply(flow_sim@z, 1, which.max)
-      Zhat_list1[[j]] <- Zhat
-      Ztoy_list1[[j]] <- Ztoy
-    } else {
-      warning(paste("Clustering failed for simulation", j))
-    }
-  }
-  
-  # Store the lists for this cov_sim value
-  simulated_data_lists[[paste("cov_sim", cov_sim, sep = "_")]] <- list(
-    simulated_samples = simulated_sample_list, 
-    flow_sims = flow_sim_list, 
-    MM = MM_list, 
-    Zhat = Zhat_list1,
-    pi=pi1,
-    Ztoy = Ztoy_list1
-  )
-}
+To run the R code, open the `R/covsim_clustering_simulation.R` file in your R environment and source it.
+
+#### Python
+
+To run the Python code, open the `Python/covsim_clustering_simulation.py` file and execute it in your Python environment.
+
+### Code Explanation
+
+#### R Code
+
+The R script `covsim_clustering_simulation.R` generates simulated data for various covariance values (`cov_sim`), applies clustering analysis using `flowClust`, and stores the results for further evaluation.
+
+## Contribution
+
+We welcome contributions to improve the project. Please open issues or submit pull requests on GitHub.
+
+## License
+
+This project is part of a student project at Trinity College Dublin. For more details, see the `LICENSE` file.
